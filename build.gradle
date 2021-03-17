@@ -1,0 +1,55 @@
+plugins {
+    id 'org.springframework.boot' version '2.3.2.RELEASE'
+    id 'io.spring.dependency-management' version '1.0.8.RELEASE'
+    id 'java'
+}
+
+group = 'com.example'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '1.8'
+
+repositories {
+    mavenCentral()
+    jcenter()
+}
+
+dependencies {
+
+    compileOnly 'org.projectlombok:lombok:1.18.16'
+    annotationProcessor 'org.projectlombok:lombok:1.18.16'
+
+    testCompileOnly 'org.projectlombok:lombok:1.18.16'
+    testAnnotationProcessor 'org.projectlombok:lombok:1.18.16'
+
+    compileOnly 'io.jsonwebtoken:jjwt:0.9.1'
+    compileOnly 'org.glassfish.jersey.core:jersey-common:3.0.0'
+    compileOnly 'org.glassfish.jersey.core:jersey-client:3.0.0'
+    compileOnly 'org.glassfish.jersey.core:jersey-server:3.0.0'
+
+    compileOnly 'org.glassfish.jersey.containers:jersey-container-jdk-http:3.0.0'
+    compileOnly 'org.glassfish.jersey.containers:jersey-container-servlet:3.0.0'
+
+
+    implementation 'io.jsonwebtoken:jjwt:0.9.1'
+    implementation 'org.glassfish.jersey.core:jersey-common:3.0.0'
+    implementation 'org.glassfish.jersey.core:jersey-client:3.0.0'
+    implementation 'org.glassfish.jersey.core:jersey-server:3.0.0'
+    implementation 'org.glassfish.jersey.containers:jersey-container-jdk-http:3.0.0'
+    implementation 'org.glassfish.jersey.containers:jersey-container-servlet:3.0.0'
+    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation 'org.springframework.security:spring-security-test'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    runtimeOnly 'com.h2database:h2'
+
+    testImplementation('org.springframework.boot:spring-boot-starter-test') {
+        exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
+    }
+}
+
+test {
+    useJUnitPlatform()
+}
+
+
