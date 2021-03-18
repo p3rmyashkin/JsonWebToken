@@ -12,36 +12,58 @@ import java.util.Optional;
 @AllArgsConstructor
 public class CookieService {
 
-    private final String cookieName = "token";
+    private final String LONG_TERM_COOKIE = "long_term_cookie";
+    private final String ONCE_PER_REQUEST_COOKIE = "once_per_request";
 
     private final CookieEncryptionService cookieEncryptionService;
 
-    public Cookie createTokenCookie(String token, int duration) {
-        Cookie cookie = new Cookie(cookieName, cookieEncryptionService.encrypt(token));
+    public Cookie createLongTermCookie(String token, int duration) {
+        return createCookie(LONG_TERM_COOKIE, token, duration);
+    }
+
+    public Cookie createOncePerRequestCookie(String token, int duration) {
+        return createCookie(ONCE_PER_REQUEST_COOKIE, token, duration);
+    }
+
+    private Cookie createCookie(String type, String token, int duration) {
+        Cookie cookie = new Cookie(type, cookieEncryptionService.encrypt(token));
         cookie.setMaxAge(duration);
         cookie.setPath("/");
         cookie.setHttpOnly(true);
         return cookie;
     }
 
-    public Cookie createTokenCookie(JsonWebToken jsonWebToken) {
-        return createTokenCookie(jsonWebToken.getValue(), jsonWebToken.getDuration());
+
+    public Cookie createOncePerRequestCookie(JsonWebToken jsonWebToken) {
+        return createOncePerRequestCookie(jsonWebToken.getValue(), jsonWebToken.getDuration());
     }
 
-    public Cookie deleteCookie(String token) {
-        return createTokenCookie(token, 0);
+    public Cookie createLongTermCookie(JsonWebToken jsonWebToken) {
+        return createLongTermCookie(jsonWebToken.getValue(), jsonWebToken.getDuration());
     }
 
-    public Optional<String> getCookieFromRequest(HttpServletRequest request) {
+    public Cookie deleteCookie(String type, String token) {
+        return createCookie(type, token, 0);
+    }
+
+    public Optional<String> getCookie(HttpServletRequest request, String type) {
         Cookie[] cookies = request.getCookies();
         if (cookies != null) {
             for (Cookie cookie : cookies) {
-                if (cookieName.equals(cookie.getName())) {
+                if (type.equals(cookie.getName())) {
                     String token = cookie.getValue();
                     if (token != null) return Optional.of(cookieEncryptionService.decrypt(token));
                 }
             }
         }
         return Optional.empty();
+    }
+
+    public Optional<String> getLongTermCookie(HttpServletRequest request) {
+        return getCookie(request, LONG_TERM_COOKIE);
+    }
+
+    public Optional<String> getOncePerRequestCookie(HttpServletRequest request) {
+        return getCookie(request, ONCE_PER_REQUEST_COOKIE);
     }
 }

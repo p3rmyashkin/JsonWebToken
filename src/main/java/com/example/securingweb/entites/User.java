@@ -17,11 +17,12 @@ public class User {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "USER_ID")
+	@ToString.Exclude
 	private long id;
 
 	@Column(unique = true)
 	private String username;
+	@ToString.Exclude
 	private String password;
 
 	@ManyToOne

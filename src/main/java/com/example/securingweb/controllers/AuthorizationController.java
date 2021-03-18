@@ -2,9 +2,10 @@ package com.example.securingweb.controllers;
 
 import com.example.securingweb.entites.User;
 import com.example.securingweb.request.UsernamePasswordRequestBody;
+import com.example.securingweb.security.cookie.CookieService;
 import com.example.securingweb.security.jwt.JsonWebToken;
 import com.example.securingweb.security.jwt.JsonWebTokenService;
-import com.example.securingweb.security.cookie.CookieService;
+import com.example.securingweb.security.jwt.SecureJsonWebTokenService;
 import com.example.securingweb.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -22,6 +23,9 @@ public class AuthorizationController {
 
     @Autowired
     private JsonWebTokenService jsonWebTokenService;
+
+    @Autowired
+    private SecureJsonWebTokenService secureJsonWebTokenService;
 
     @Autowired
     private CookieService cookieService;
@@ -52,7 +56,9 @@ public class AuthorizationController {
             return "Cannot authorize username " + body.getUsername();
         }
         JsonWebToken jsonWebToken = jsonWebTokenService.generateToken(user.getUsername());
-        response.addCookie(cookieService.createTokenCookie(jsonWebToken));
+        JsonWebToken secureToken = secureJsonWebTokenService.generateOncePerRequestToken();
+        response.addCookie(cookieService.createLongTermCookie(jsonWebToken));
+        response.addCookie(cookieService.createOncePerRequestCookie(secureToken));
         return "Authorization successful, check your cookie";
     }
 
