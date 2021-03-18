@@ -14,29 +14,33 @@ public class MetaTokenService {
     @Autowired
     private MetaTokenRepository repository;
 
+    private final static int LENGTH = 16;
     private final Random random = new Random();
 
-    private String generateRandomString(int length) {
+    private String generateRandomString() {
 
         return random.ints(97, 123)
-                .limit(length)
+                .limit(LENGTH)
                 .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
                 .toString();
     }
 
     public MetaTokenInf generateTokenInf() {
         MetaTokenInf metaTokenInf = new MetaTokenInf();
-        metaTokenInf.setValue(generateRandomString(16));
+        metaTokenInf.setValue(generateRandomString());
         repository.save(metaTokenInf);
         return metaTokenInf;
     }
 
     public boolean validateTokenIsPresentAndThenDelete(Long id, String value) {
-        boolean isValid = false;
         Optional<MetaTokenInf> byId = repository.findById(id);
-        MetaTokenInf metaTokenInf = byId.orElseThrow(() -> new RuntimeException("no such token"));
-        if (metaTokenInf.getValue().equals(value)) isValid = true;
-        repository.deleteById(id);
-        return isValid;
+        if (byId.isPresent()) {
+            MetaTokenInf metaTokenInf = byId.get();
+            if (metaTokenInf.getValue().equals(value)) {
+                repository.deleteById(id);
+                return true;
+            }
+        }
+        return false;
     }
 }
